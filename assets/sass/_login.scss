@@ -1,6 +1,7 @@
 .card-container.card {
     width: 350px;
     padding: 40px 40px;
+    margin: 0 auto;
 }
 
 .btn {
@@ -96,7 +97,7 @@
 
 .btn-signin {
     /*background-color: #4d90fe; */
-    background-color: #0066CC;
+    background-color: #2DC62A;
     /* background-color: linear-gradient(rgb(104, 145, 162), rgb(12, 97, 33));*/
     padding: 0px;
     font-weight: 700;
@@ -126,4 +127,13 @@
 .forgot-password:active,
 .forgot-password:focus{
     color: #004e99;
+}
+
+.container {
+    height: 100%;
+    text-align: center;
+}
+
+.vcenter-container {
+  @include scut-vcenter-ib;
 }
