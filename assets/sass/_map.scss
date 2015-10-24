@@ -1,3 +1,9 @@
+@media (min-width: 320px) {
+  .header-btn {
+  	
+  }
+}
+
 div#map-page {
 	position: absolute;
 	top:0;
@@ -17,8 +23,11 @@ div#map-page {
 	}
 
 	&.show-actions {
-		.bottom-bar, .map-holder {
+		.map-holder {
 			bottom:56px;
+		}
+		.bottom-bar {
+			bottom: 0px;
 		}
 	}
 
