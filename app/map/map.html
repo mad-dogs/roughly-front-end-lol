@@ -1,14 +1,18 @@
-<div id="map-page">
+<div id="map-page" class="small">
 	
 	<div class="top-nav" ng-controller="TopNavController">
-		<a href="#" ng-repeat="action in currentActions" ng-click="action.toRun()">
-	        <span>{{action.label}}</span>
-	    </a>
+		<div class="links">
+			<a href="#" class="btn btn-primary" ng-repeat="action in currentActions" ng-click="action.toRun()">
+		        <span>{{action.label}}</span>
+		    </a>
+		</div>
 	</div>
 
 	<div class="map-holder" ng-controller="MapController">
-		<div id="mapFinalContainer" style="width:400px; height:400px;"></div>
+		<div id="mapFinalContainer"></div>
 	</div>
+
+	<div class="form"></div>
 
 	<div class="bottom-actions" ng-controller="BottomActionsController"> 
 		<a href="#" ng-repeat="action in currentActions" ng-click="action.toRun()">
