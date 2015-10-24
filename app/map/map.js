@@ -14,19 +14,34 @@ angular.module('myApp.map', ['ngRoute'])
 	$scope.mode = 'initial';
 	$scope.currentPosition = false;
 
-	$scope.getLocation = function () {
+	$scope.watchId = false;
+
+	$scope.startTrackingLocation = function () {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition($scope.gotPosition, $scope.showError);
+            $scope.watchId = navigator.geolocation.watchPosition($scope.gotPosition);
         }
         else {
-            $scope.error = "Geolocation is not supported by this browser.";
+            alert('No geolocation');
         }
     }
 
-	$scope.showBottomContent = function(){
-		//Hide bottom bar
-		//Shrink map
-		//Enable scroll
+    $scope.stopTrackingLocation = function() {
+        if (navigator.geolocation && $scope.watchId !== false) {
+        	navigator.geolocation.clearWatch($scope.watchId);
+        	$scope.watchId = false;
+        }
+    }
+
+    $scope.gotoMode = function(mode){
+    	$scope.mode = mode;
+    }
+
+	$scope.showActionsBar = function(){
+		
+	}    
+
+	$scope.hideActionsBar = function(){
+		
 	}
 
 	$scope.hideBottomContent = function(){
@@ -45,7 +60,7 @@ angular.module('myApp.map', ['ngRoute'])
 		$scope.$broadcast ('receivedUpdateLocation');
 	}
 
-    $scope.getLocation();
+    $scope.startTrackingLocation();
 
 }])
 
@@ -106,9 +121,13 @@ angular.module('myApp.map', ['ngRoute'])
 	//Setup functions to interact with map
 
 	$scope.map = false;
+	$scope.isTrackingLocation = false;
 
 	$scope.$on('receivedUpdateLocation', function(e) {  
         console.log('Map received updated position');       
+		if($scope.isTrackingLocation){
+			//Re-center map on current location
+		}
     });
 
 	$scope.initMap = function(){
@@ -122,6 +141,14 @@ angular.module('myApp.map', ['ngRoute'])
 
 	$scope.destroyMap = function(){
 
+	}
+
+	$scope.startTrackingUserLocation = function(){
+		$scope.isTrackingLocation = true;
+	}
+
+	$scope.stopTrackingUserLocation = function(){
+		$scope.isTrackingLocation = false;
 	}
 
 	$scope.initMap();
