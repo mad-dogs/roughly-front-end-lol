@@ -19,7 +19,7 @@
 		<div id="mapFinalContainer"></div>
 	</div>
 
-	<div class="bottom-actions" ng-controller="BottomActionsController"> 
+	<div class="bottom-bar" ng-controller="BottomActionsController"> 
 		<a ng-repeat="action in currentActions" ng-click="action.toRun()">
 	        <span>{{action.label}}</span>
 	    </a>
@@ -28,7 +28,5 @@
 	<div class="content-below-map form" ng-controller="ContentBelowController">
 		
 	</div>
-
-	<div class="bottom-bar"></div>
 
 </div>
