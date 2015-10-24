@@ -1,0 +1,14 @@
+'use strict';
+
+angular.module('myApp.view2', ['ngRoute'])
+
+.config(['$routeProvider', function($routeProvider) {
+  $routeProvider.when('/map', {
+    templateUrl: 'map/map.html',
+    controller: 'MapCtrl'
+  });
+}])
+
+.controller('MapCtrl', [function() {
+
+}]);
