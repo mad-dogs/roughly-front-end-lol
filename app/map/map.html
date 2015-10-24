@@ -1,21 +1,30 @@
+<div id="map-page">
+	<div class="top-nav" ng-controller="TopNavController as topNav">
+		<div class="links">
+			<a href="" class="btn btn-primary">Start Run</a>
+			<a href="" class="btn btn-primary">Tag</a>
+		</div>
+	</div>
 
-<div class="top-nav" ng-controller="TopNavController">
-	<a href="#" ng-repeat="action in currentActions" ng-click="action.toRun()">
-        <span>{{action.label}}</span>
-    </a>
+
+	<div class="top-nav" ng-controller="TopNavController">
+		<a href="#" ng-repeat="action in currentActions" ng-click="action.toRun()">
+	        <span>{{action.label}}</span>
+	    </a>
+	</div>
+
+	<div class="map-holder" ng-controller="MapController">
+		<div id="mapFinalContainer" style="width:400px; height:400px;"></div>
+	</div>
+
+	<div class="bottom-actions" ng-controller="BottomActionsController"> 
+		<a href="#" ng-repeat="action in currentActions" ng-click="action.toRun()">
+	        <span>{{action.label}}</span>
+	    </a>
+	</div>
+
+	<div class="content-below-map" ng-controller="ContentBelowController">
+		
+	</div>
+
 </div>
-
-<div class="map-holder" ng-controller="MapController">
-	<div id="mapFinalContainer" style="width:400px; height:400px;"></div>
-</div>
-
-<div class="bottom-actions" ng-controller="BottomActionsController"> 
-	<a href="#" ng-repeat="action in currentActions" ng-click="action.toRun()">
-        <span>{{action.label}}</span>
-    </a>
-</div>
-
-<div class="content-below-map" ng-controller="ContentBelowController">
-	
-</div>
-

@@ -1,0 +1,16 @@
+div#map-page {
+	position: relative;
+
+	.top-nav {
+		position:fixed;
+		top:0;
+		left:0;
+		background:#FFF;
+		width:100%;
+		padding:10px;
+
+		.links {
+			float: right;
+		}
+	}
+}
