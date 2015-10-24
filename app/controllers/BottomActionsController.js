@@ -2,10 +2,15 @@ angular.module('myApp.map', ['ngRoute'])
 
 .controller('BottomActionsController', ['$scope', function($scope) {
 
-	var map = this;
+	alert('here');
 
-	map.test = function(){
-		alert('test');
-	} 
+	$scope.currentActions = [];
+
+	$scope.currentActions.push({
+		'label': 'Click Me',
+		'toRun': function(){
+			alert('this');
+		}
+	});
 
 }]);
