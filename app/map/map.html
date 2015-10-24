@@ -2,7 +2,7 @@
 	
 	<div class="top-nav" ng-controller="TopNavController">
 		<div class="links">
-			<a href="#" class="btn btn-primary" ng-repeat="action in currentActions" ng-click="action.toRun()">
+			<a class="btn btn-primary" ng-repeat="action in currentActions" ng-click="action.toRun()">
 		        <span>{{action.label}}</span>
 		    </a>
 		</div>
@@ -12,15 +12,13 @@
 		<div id="mapFinalContainer"></div>
 	</div>
 
-	<div class="form"></div>
-
 	<div class="bottom-actions" ng-controller="BottomActionsController"> 
-		<a href="#" ng-repeat="action in currentActions" ng-click="action.toRun()">
+		<a ng-repeat="action in currentActions" ng-click="action.toRun()">
 	        <span>{{action.label}}</span>
 	    </a>
 	</div>
 
-	<div class="content-below-map" ng-controller="ContentBelowController">
+	<div class="content-below-map form" ng-controller="ContentBelowController">
 		
 	</div>
 

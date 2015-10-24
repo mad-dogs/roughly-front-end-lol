@@ -14,19 +14,63 @@ angular.module('myApp.map', ['ngRoute'])
 	$scope.mode = 'initial';
 	$scope.currentPosition = false;
 
-	$scope.getLocation = function () {
+	$scope.watchId = false;
+
+	$scope.startTrackingLocation = function () {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition($scope.gotPosition, $scope.showError);
+            $scope.watchId = navigator.geolocation.watchPosition($scope.gotPosition);
         }
         else {
-            $scope.error = "Geolocation is not supported by this browser.";
+            alert('No geolocation');
         }
     }
 
+    $scope.stopTrackingLocation = function() {
+        if (navigator.geolocation && $scope.watchId !== false) {
+        	navigator.geolocation.clearWatch($scope.watchId);
+        	$scope.watchId = false;
+        }
+    }
+
+    $scope.gotoMode = function(mode){
+    	$scope.mode = mode;
+
+    	if($scope.mode == 'tagging'){
+    		console.log('Tagging mode');
+    		$scope.hideBottomContent();
+
+    	}else if($scope.mode == 'begin-run'){
+    		console.log('begin-run mode');
+    		$scope.showBottomContent();
+
+    	}else if($scope.mode == 'during-run'){
+    		console.log('during-run mode');
+    		
+    	}else if($scope.mode == 'after-run'){
+    		console.log('after-run mode');
+    		
+    	}else if($scope.mode == 'initial'){
+    		console.log('initial mode');
+    		$scope.hideBottomContent();
+    		
+    	}
+
+    }
+
+	$scope.showActionsBar = function(){
+		
+	}    
+
+	$scope.hideActionsBar = function(){
+		
+	}
+
 	$scope.showBottomContent = function(){
-		//Hide bottom bar
-		//Shrink map
-		//Enable scroll
+		//Scroll to top
+		//Disable scroll
+		//Expand map
+		//Show bottom bar
+		$('#map-page').addClass('small');
 	}
 
 	$scope.hideBottomContent = function(){
@@ -34,6 +78,7 @@ angular.module('myApp.map', ['ngRoute'])
 		//Disable scroll
 		//Expand map
 		//Show bottom bar
+		$('#map-page').removeClass('small');
 	}
 
 	$scope.showError = function(){
@@ -45,7 +90,7 @@ angular.module('myApp.map', ['ngRoute'])
 		$scope.$broadcast ('receivedUpdateLocation');
 	}
 
-    $scope.getLocation();
+    $scope.startTrackingLocation();
 
 }])
 
@@ -53,19 +98,22 @@ angular.module('myApp.map', ['ngRoute'])
 
 	$scope.currentActions = [];
 
-	$scope.currentActions.push({
-		'label': 'Nav 1',
+	var startRunAction = {
+		'label': 'Start Run',
 		'toRun': function(){
-			alert('this');
+			$scope.gotoMode('begin-run');
 		}
-	});
+	}
 
-	$scope.currentActions.push({
-		'label': 'Nav 2',
+	var tagAction = {
+		'label': 'Tag People In Need',
 		'toRun': function(){
-			alert('this');
+			$scope.gotoMode('tagging');	
 		}
-	});
+	}
+
+	$scope.currentActions.push(startRunAction);
+	$scope.currentActions.push(tagAction);
 
 }])
 
@@ -106,9 +154,13 @@ angular.module('myApp.map', ['ngRoute'])
 	//Setup functions to interact with map
 
 	$scope.map = false;
+	$scope.isTrackingLocation = false;
 
 	$scope.$on('receivedUpdateLocation', function(e) {  
         console.log('Map received updated position');       
+		if($scope.isTrackingLocation){
+			//Re-center map on current location
+		}
     });
 
 	$scope.initMap = function(){
@@ -122,6 +174,14 @@ angular.module('myApp.map', ['ngRoute'])
 
 	$scope.destroyMap = function(){
 
+	}
+
+	$scope.startTrackingUserLocation = function(){
+		$scope.isTrackingLocation = true;
+	}
+
+	$scope.stopTrackingUserLocation = function(){
+		$scope.isTrackingLocation = false;
 	}
 
 	$scope.initMap();
