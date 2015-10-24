@@ -87,7 +87,9 @@ angular.module('myApp.map', ['ngRoute'])
 		//Expand map
 		//Show bottom bar
 		$('#map-page').addClass('small');
-		window.dispatchEvent(new Event('resize'));
+		setTimeout(function(){
+			window.dispatchEvent(new Event('resize'));
+		}, 1000);
 	}
 
 	$scope.hideBottomContent = function(){
@@ -96,7 +98,9 @@ angular.module('myApp.map', ['ngRoute'])
 		//Expand map
 		//Show bottom bar
 		$('#map-page').removeClass('small');
-		window.dispatchEvent(new Event('resize'));
+		setTimeout(function(){
+			window.dispatchEvent(new Event('resize'));
+		}, 1000);
 
 	}
 
@@ -131,8 +135,32 @@ angular.module('myApp.map', ['ngRoute'])
 		}
 	}
 
+	var cancelAction = {
+		'label': 'Cancel',
+		'toRun': function(){
+			$scope.gotoMode('initial');	
+		}
+	}
+
 	$scope.currentActions.push(startRunAction);
 	$scope.currentActions.push(tagAction);
+
+	$scope.$on('mode-change', function(e, newMode) {  
+        //Update the bottom form
+        if(newMode == 'tagging'){
+        	$scope.currentActions = [cancelAction];
+        }else if(newMode == 'tag-detail'){
+        	$scope.currentActions = [cancelAction];
+        }else if(newMode == 'begin-run'){
+        	$scope.currentActions = [cancelAction];
+        }else if(newMode == 'during-run'){
+        	$scope.currentActions = [cancelAction];
+        }else if(newMode == 'after-run'){
+        	$scope.currentActions = [cancelAction];
+        }else if(newMode == 'initial'){
+        	$scope.currentActions = [startRunAction,tagAction];
+        }
+    });
 
 }])
 
@@ -205,6 +233,8 @@ angular.module('myApp.map', ['ngRoute'])
 	$scope.displayedTags = [];
 	$scope.renderedTags = [];
 
+	$scope.showCrosshair = false;
+
 	$scope.map = false;
 	$scope.isTrackingLocation = true;
 
@@ -213,7 +243,7 @@ angular.module('myApp.map', ['ngRoute'])
 		if($scope.isTrackingLocation){
 			//Re-center map on current location
 			$scope.map.panTo(new google.maps.LatLng($scope.currentPosition.coords.latitude, $scope.currentPosition.coords.longitude));
-			$scope.map.setZoom(17);
+			$scope.map.setZoom(16);
 		}
     });
 
@@ -221,7 +251,7 @@ angular.module('myApp.map', ['ngRoute'])
 
 		$scope.map = new google.maps.Map(document.getElementById('mapFinalContainer'), {
 			center: {lat: 0, lng: 0},
-			zoom: 17
+			zoom: 16
 		});		
 		mapCenterService.setMap($scope.map);
 
@@ -276,22 +306,28 @@ angular.module('myApp.map', ['ngRoute'])
         //Update the bottom form
         if(newMode == 'tagging'){
         	$scope.stopTrackingUserLocation();
+			$scope.showCrosshair = true;
         }else if(newMode == 'tag-detail'){
         	$scope.stopTrackingUserLocation();
+        	$scope.showCrosshair = true;
         }else if(newMode == 'begin-run'){
         	$scope.stopTrackingUserLocation();
+        	$scope.showCrosshair = false;
         }else if(newMode == 'during-run'){
         	$scope.startTrackingUserLocation();
+        	$scope.showCrosshair = false;
         }else if(newMode == 'after-run'){
         	$scope.stopTrackingUserLocation();
+        	$scope.showCrosshair = false;
         }else if(newMode == 'initial'){
         	$scope.startTrackingUserLocation();
+        	$scope.showCrosshair = false;
         }
     });
 
 }])
 
-.controller('TagDetailsForm', ['$scope', '$http', 'TaggingService', function($scope, $http, taggingService) {
+.controller('TagDetailsForm', ['$scope', '$http', 'TaggingService', 'MapCenterService', function($scope, $http, taggingService, mapCenterService) {
 
 	$scope.numPeople = 0;
 	$scope.numDogs = 0;
@@ -301,8 +337,8 @@ angular.module('myApp.map', ['ngRoute'])
 
 		//make lat lng object
 		var position = {
-			lat: 55,
-			lng: 3
+			lat: mapCenterService.getCenter().lat(),
+			lng: mapCenterService.getCenter().lng()
 		}
 
 		//Send tag to servers
@@ -310,11 +346,12 @@ angular.module('myApp.map', ['ngRoute'])
 			headers: {'Content-Type': 'application/json'},
 		  	method: 'POST',
 		  	url: 'http://roughly-api.herokuapp.com/tag',
-		  	data: {position: position, numberOfPeople: $scope.numPeople, numberOfDogs: $scope.numDogs, tagType: {id: parseInt($scope.selectedType)}}
+		  	data: {position: position, numberOfPeople: $scope.numPeople, numberOfDogs: $scope.numDogs, tagType: '/tagtype/'+$scope.selectedType}
 
 		}).then(function successCallback(response) {
 		    
-			//We are happy
+			//We are happy, go back to initial mode
+			$scope.gotoMode('initial');
 
 		}, function errorCallback(response) {
 		    
