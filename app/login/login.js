@@ -9,7 +9,7 @@ angular.module('myApp.login', ['ngRoute'])
   });
 }])
 
-.controller('LoginController', ['$scope', '$http', function($scope, $http) {
+.controller('LoginController', ['$scope', '$http', '$location', function($scope, $http, $location) {
  
     $scope.formData = {};
 
@@ -25,14 +25,21 @@ angular.module('myApp.login', ['ngRoute'])
         console.log(data);
 
         if (!data.success) {
-          // if not successful, bind errors to error variables
-          $scope.errorName = data.errors.name;
-          $scope.errorSuperhero = data.errors.superheroAlias;
+
+          alert(data.errors.name);
+
         } else {
-          // if successful, bind success message to message
-          $scope.message = data.message;
+      
+          $location.path('/map');
+          
         }
+      })
+      .error(function(data) {
+      
+        alert("Couldn't connect to the server");
+
       });
+
     };
 
 }]);
