@@ -173,7 +173,7 @@ angular.module('myApp.map', ['ngRoute'])
 	}
 
 	$scope.gotoStartRunForm = function(){
-		
+		$scope.currentContent = 'views/startrun.html';		
 	}
 
 	$scope.gotoDuringRunForm = function(){

@@ -1,27 +1,27 @@
 <div class="tag-details-form" ng-controller="TagDetailsForm">
 
-<div>
-	<label>Number of people</label>
-	<input type="number" ng-model="numPeople">
-	<input type="number" ng-model="numDogs">
-	<select ng-model="selectedType">
-		<option value="1">On The Move</option>
-		<option value="2">Bedded Down</option>
-	</select>
-</div>
-<div>
-<span>Needs</span>
-	<div ng-repeat="need in needs">
-		<select ng-model="need.needType">
-			<option value="1">Sleeping Bag</option> 
-			<option value="2">Food</option> 
-			<option value="3">Something Else</option> 
+	<div>
+		<label>Number of people</label>
+		<input type="number" ng-model="numPeople">
+		<input type="number" ng-model="numDogs">
+		<select ng-model="selectedType">
+			<option value="1">On The Move</option>
+			<option value="2">Bedded Down</option>
 		</select>
-		<input type="number" ng-model="need.needQuantity">
-		<button ng-click="removeNeed(need)">Remove</button>
 	</div>
-	<button ng-click="addNeed()">Add Need</button>
-</div>
+	<div>
+		<span>Needs</span>
+		<div ng-repeat="need in needs">
+			<select ng-model="need.needType">
+				<option value="1">Sleeping Bag</option> 
+				<option value="2">Food</option> 
+				<option value="3">Something Else</option> 
+			</select>
+			<input type="number" ng-model="need.needQuantity">
+			<button ng-click="removeNeed(need)">Remove</button>
+		</div>
+		<button ng-click="addNeed()">Add Need</button>
+	</div>
 
 	<input type="submit" value="TAG!!!" ng-click="submitTag()">
 
