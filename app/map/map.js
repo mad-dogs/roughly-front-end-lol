@@ -138,8 +138,10 @@ angular.module('myApp.map', ['ngRoute'])
 
 .controller('ContentBelowController', ['$scope', function($scope) {
 
-	$scope.gotoTagForm = function(){
+	$scope.currentContent = '';
 
+	$scope.gotoTagForm = function(){
+		$scope.currentContent = 'views/tagdetails.html';
 	}
 
 	$scope.gotoStartRunForm = function(){
@@ -221,6 +223,7 @@ angular.module('myApp.map', ['ngRoute'])
 			center: {lat: 0, lng: 0},
 			zoom: 17
 		});		
+		mapCenterService.setMap($scope.map);
 
 	}
 
@@ -288,16 +291,52 @@ angular.module('myApp.map', ['ngRoute'])
 
 }])
 
+.controller('TagDetailsForm', ['$scope', '$http', 'TaggingService', function($scope, $http, taggingService) {
+
+	$scope.numPeople = 0;
+	$scope.numDogs = 0;
+	$scope.selectedType = '1';
+
+	$scope.submitTag = function(){
+
+		//make lat lng object
+		var position = {
+			lat: 55,
+			lng: 3
+		}
+
+		//Send tag to servers
+		$http({
+			headers: {'Content-Type': 'application/json'},
+		  	method: 'POST',
+		  	url: 'http://roughly-api.herokuapp.com/tag',
+		  	data: {position: position, numberOfPeople: $scope.numPeople, numberOfDogs: $scope.numDogs, tagType: {id: parseInt($scope.selectedType)}}
+
+		}).then(function successCallback(response) {
+		    
+			//We are happy
+
+		}, function errorCallback(response) {
+		    
+		});
+
+	}
+
+}])
+
 .service('MapCenterService', function() {
   var self = this;
-  self.currentCenter = false;
+  self.currentMap = false;
 
-  self.setCenter = function(latLng){
-	self.currentCenter = latLng;
+  self.setMap = function(map){
+	self.currentMap = map;
   }
 
   self.getCenter = function(){
-  	return self.currentCenter;
+  	if(self.currentMap == false){
+  		return false;
+  	}
+  	return self.currentMap.getCenter();
   }
 
 })
