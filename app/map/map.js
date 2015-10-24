@@ -20,7 +20,7 @@ angular.module('myApp.map', ['ngRoute'])
 
 	$scope.startTrackingLocation = function () {
         if (navigator.geolocation) {
-            $scope.watchId = navigator.geolocation.watchPosition($scope.gotPosition);
+            $scope.watchId = navigator.geolocation.getCurrentPosition($scope.gotPosition);
         }
         else {
             alert('No geolocation');
@@ -131,7 +131,7 @@ angular.module('myApp.map', ['ngRoute'])
 	var tagAction = {
 		'label': 'Spot',
 		'toRun': function(){
-			$scope.gotoMode('tagging');	
+			$scope.gotoMode('tag-detail');	
 		}
 	}
 
@@ -211,7 +211,7 @@ angular.module('myApp.map', ['ngRoute'])
 
 	$scope.currentActions = [];
 
-	$scope.currentActions.push({
+	/*$scope.currentActions.push({
 		'label': 'Tag',
 		'toRun': function(){
 			console.log('we are tagging a position');
@@ -219,7 +219,7 @@ angular.module('myApp.map', ['ngRoute'])
 			taggingService.setPosition(center);
 			$scope.gotoMode('tag-detail');
 		}
-	});
+	});*/
 
 }])
 
@@ -332,6 +332,22 @@ angular.module('myApp.map', ['ngRoute'])
 	$scope.numPeople = 0;
 	$scope.numDogs = 0;
 	$scope.selectedType = '1';
+	$scope.needs = [];
+
+	$scope.addNeed = function(){
+		var newNeed = {
+			needType: "1",
+			needQuantity: 1,
+		}
+
+		$scope.needs.push(newNeed);
+	}
+
+	$scope.removeNeed = function(need){
+		$scope.needs = $scope.needs.filter(function (el) {
+            return el !== need;
+        });
+	}
 
 	$scope.submitTag = function(){
 
@@ -341,12 +357,22 @@ angular.module('myApp.map', ['ngRoute'])
 			lng: mapCenterService.getCenter().lng()
 		}
 
+		var needs = [];
+		for(var i = 0; i < $scope.needs.length; i++){
+			for(var j = 0; j < $scope.needs[i].needQuantity; j++){
+				var need = {
+					item: 'item/'+$scope.needs[i].needType
+				}
+				needs.push(need);
+			}
+		}
+
 		//Send tag to servers
 		$http({
 			headers: {'Content-Type': 'application/json'},
 		  	method: 'POST',
 		  	url: 'http://roughly-api.herokuapp.com/tag',
-		  	data: {position: position, numberOfPeople: $scope.numPeople, numberOfDogs: $scope.numDogs, tagType: '/tagtype/'+$scope.selectedType}
+		  	data: {position: position, numberOfPeople: $scope.numPeople, numberOfDogs: $scope.numDogs, tagType: '/tagtype/'+$scope.selectedType, needs: needs}
 
 		}).then(function successCallback(response) {
 		    
