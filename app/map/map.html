@@ -1,7 +1,7 @@
 <div id="map-page">
 	
 	<div class="top-nav" ng-controller="TopNavController">
-		<a href="#" ng-repeat="action in currentActions" ng-click="action.toRun()">
+		<a ng-repeat="action in currentActions" ng-click="action.toRun()">
 	        <span>{{action.label}}</span>
 	    </a>
 	</div>
@@ -11,7 +11,7 @@
 	</div>
 
 	<div class="bottom-actions" ng-controller="BottomActionsController"> 
-		<a href="#" ng-repeat="action in currentActions" ng-click="action.toRun()">
+		<a ng-repeat="action in currentActions" ng-click="action.toRun()">
 	        <span>{{action.label}}</span>
 	    </a>
 	</div>

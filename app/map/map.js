@@ -34,6 +34,27 @@ angular.module('myApp.map', ['ngRoute'])
 
     $scope.gotoMode = function(mode){
     	$scope.mode = mode;
+
+    	if($scope.mode == 'tagging'){
+    		console.log('Tagging mode');
+    		$scope.hideBottomContent();
+
+    	}else if($scope.mode == 'begin-run'){
+    		console.log('begin-run mode');
+    		$scope.showBottomContent();
+
+    	}else if($scope.mode == 'during-run'){
+    		console.log('during-run mode');
+    		
+    	}else if($scope.mode == 'after-run'){
+    		console.log('after-run mode');
+    		
+    	}else if($scope.mode == 'initial'){
+    		console.log('initial mode');
+    		$scope.hideBottomContent();
+    		
+    	}
+
     }
 
 	$scope.showActionsBar = function(){
@@ -44,11 +65,20 @@ angular.module('myApp.map', ['ngRoute'])
 		
 	}
 
+	$scope.showBottomContent = function(){
+		//Scroll to top
+		//Disable scroll
+		//Expand map
+		//Show bottom bar
+		$('#map-page').addClass('small');
+	}
+
 	$scope.hideBottomContent = function(){
 		//Scroll to top
 		//Disable scroll
 		//Expand map
 		//Show bottom bar
+		$('#map-page').removeClass('small');
 	}
 
 	$scope.showError = function(){
@@ -68,19 +98,22 @@ angular.module('myApp.map', ['ngRoute'])
 
 	$scope.currentActions = [];
 
-	$scope.currentActions.push({
-		'label': 'Nav 1',
+	var startRunAction = {
+		'label': 'Start Run',
 		'toRun': function(){
-			alert('this');
+			$scope.gotoMode('begin-run');
 		}
-	});
+	}
 
-	$scope.currentActions.push({
-		'label': 'Nav 2',
+	var tagAction = {
+		'label': 'Tag People In Need',
 		'toRun': function(){
-			alert('this');
+			$scope.gotoMode('tagging');	
 		}
-	});
+	}
+
+	$scope.currentActions.push(startRunAction);
+	$scope.currentActions.push(tagAction);
 
 }])
 
