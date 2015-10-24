@@ -137,3 +137,7 @@
 .vcenter-container {
   @include scut-vcenter-ib;
 }
+
+.login-page > .ng-scope {
+    height: 100%;
+}

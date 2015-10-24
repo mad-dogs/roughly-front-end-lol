@@ -7,6 +7,8 @@ angular.module('myApp.login', ['ngRoute'])
     templateUrl: 'login/login.html',
     controller: 'LoginController'
   });
+
+  $('body').addClass ('login-page');
 }])
 
 .controller('LoginController', ['$scope', '$http', '$location', function($scope, $http, $location) {
