@@ -217,7 +217,7 @@ angular.module('myApp.map', ['ngRoute'])
 
 		$scope.map = new google.maps.Map(document.getElementById('mapFinalContainer'), {
 			center: {lat: 0, lng: 0},
-			zoom: 8
+			zoom: 17
 		});		
 
 	}
@@ -237,9 +237,18 @@ angular.module('myApp.map', ['ngRoute'])
 	$scope.pullTagsFromServer = function(){
 		$http({
 		  	method: 'GET',
-		  	url: 'http://roughly.herokuapp.com/api/tags'
+		  	url: 'http://roughly-api.herokuapp.com/api/tag'
 		}).then(function successCallback(response) {
-		    console.log(response);
+		    console.log(response.data._embedded.tag);
+		    for(var i = 0; i < response.data._embedded.tag.length; i++){
+		    	var element = response.data._embedded.tag[i];
+		    	$scope.displayedTags.push(element);
+		    	var newMarker = new google.maps.Marker({
+			    	position: new google.maps.LatLng(element.position.lat, element.position.lng),
+			    	map: $scope.map,
+			    	title: 'TAG'
+				});
+		    }
 		}, function errorCallback(response) {
 		    
 		});
