@@ -237,7 +237,7 @@ angular.module('myApp.map', ['ngRoute'])
 	$scope.pullTagsFromServer = function(){
 		$http({
 		  	method: 'GET',
-		  	url: 'http://roughly-api.herokuapp.com/api/tag'
+		  	url: 'http://roughly-api.herokuapp.com/tag'
 		}).then(function successCallback(response) {
 		    console.log(response.data._embedded.tag);
 		    for(var i = 0; i < response.data._embedded.tag.length; i++){
