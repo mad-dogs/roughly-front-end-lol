@@ -122,14 +122,14 @@ angular.module('myApp.map', ['ngRoute'])
 	$scope.currentActions = [];
 
 	var startRunAction = {
-		'label': 'Start Run',
+		'label': 'Deliver',
 		'toRun': function(){
 			$scope.gotoMode('begin-run');
 		}
 	}
 
 	var tagAction = {
-		'label': 'Tag People In Need',
+		'label': 'Spot',
 		'toRun': function(){
 			$scope.gotoMode('tag-detail');	
 		}
