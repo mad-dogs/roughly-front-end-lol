@@ -16,6 +16,21 @@ div#map-page {
 		}
 	}
 
+	&.show-actions {
+		.bottom-bar, .map-holder {
+			bottom:56px;
+		}
+	}
+
+	.logo-container {
+		height: 36px;
+		float: left;
+	}
+
+	.logo-container img {
+		height: 36px;
+	}
+
 	.top-nav {
 		position:fixed;
 		top:0;
@@ -35,6 +50,7 @@ div#map-page {
 		left:0;
 		width:100%;
 		bottom:0;
+		transition:bottom 0.2s ease-in-out;
 
 		#mapFinalContainer {
 			width:100%;
@@ -49,5 +65,17 @@ div#map-page {
 		top:100%;
 		left:0;
 		width:100%;
+		transition:top 0.2s ease-in-out;
+	}
+
+	.bottom-bar {
+		position:fixed;
+		bottom:-56px;
+		height:56px;
+		padding:10px;
+		left:0;
+		right:0;
+		background:red;
+		transition:bottom 0.2s ease-in-out;
 	}
 }
