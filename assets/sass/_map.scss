@@ -1,5 +1,20 @@
 div#map-page {
-	position: relative;
+	position: absolute;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+	overflow:hidden;
+
+	&.small {
+		.map-holder {
+			bottom:50%;
+		}
+
+		.form {
+			top:50%;
+		}
+	}
 
 	.top-nav {
 		position:fixed;
@@ -12,5 +27,27 @@ div#map-page {
 		.links {
 			float: right;
 		}
+	}
+
+	.map-holder {
+		position: absolute;
+		top: 56px;
+		left:0;
+		width:100%;
+		bottom:0;
+
+		#mapFinalContainer {
+			width:100%;
+			height:100%;
+		}
+	}
+
+	.form {
+		position:absolute;
+		background:cyan;
+		height:50%;
+		top:100%;
+		left:0;
+		width:100%;
 	}
 }
