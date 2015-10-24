@@ -1,15 +1,12 @@
-<p>Log in brah</p>
-
-<form ng-submit="submit()">
-
-  <label>Email</label>
-  
-  <input type="text" ng-model="formData.email"/>
-
-  <label>Password</label>
-
-  <input type="password" ng-model="formData.password"/>
-
-  <input type="submit"/>
-
-</form>
+<div class="container">
+    <div class="card card-container">
+        <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
+        <p id="profile-name" class="profile-name-card"></p>
+        <form class="form-signin" ng-submit="submit()">
+            <span id="reauth-email" class="reauth-email"></span>
+            <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email" required ng-model="formData.email">
+            <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required ng-model="formData.password"/>
+            <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Log In</button>
+        </form><!-- /form -->
+    </div><!-- /card-container -->
+</div><!-- /container -->
