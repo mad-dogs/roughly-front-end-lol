@@ -44,4 +44,5 @@ gulp.task('watch', function() {
 	watcher(sassDir, 'css');
 });
 
+gulp.task('build', ['default']);
 gulp.task('default', ['css']);

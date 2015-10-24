@@ -41,3 +41,22 @@ body, html {
 %scut-vcenter-ib {
   @include scut-vcenter-ib;
 }
+
+.header-btn {
+  margin-left: 5px;
+  background-color: #2DC62A;
+  border-color: #229E20;
+}
+
+.header-btn:hover,
+.header-btn:focus,
+.header-btn:active,
+.header-btn:active:hover {
+  margin-left: 5px;
+  background-color: #229E20;
+  border-color: #229E20;
+}
+
+.header-btn span {
+  font-size: 11px;
+}
