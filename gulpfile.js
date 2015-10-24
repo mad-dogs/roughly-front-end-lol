@@ -7,7 +7,7 @@ var minifyCSS = require('gulp-minify-css');
 var gargoyle = require('gargoyle');
 
 var sassDir = 'assets/sass/';
-var targetCSSDir = 'app/assets/';
+var targetCSSDir = 'app/assets/css/';
 
 function handleError(err) {
 	console.log(err.toString());
