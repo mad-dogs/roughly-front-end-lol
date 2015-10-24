@@ -177,7 +177,7 @@ angular.module('myApp.map', ['ngRoute'])
 
 }])
 
-.controller('BottomActionsController', ['$scope', function($scope) {
+.controller('BottomActionsController', ['$scope', 'MapCenterService', 'TaggingService', function($scope, mapCenterService, taggingService) {
 
 	$scope.currentActions = [];
 
@@ -185,13 +185,15 @@ angular.module('myApp.map', ['ngRoute'])
 		'label': 'Tag',
 		'toRun': function(){
 			console.log('we are tagging a position');
-
+			var center = mapCenterService.getCenter();
+			taggingService.setPosition(center);
+			$scope.gotoMode('tag-detail');
 		}
 	});
 
 }])
 
-.controller('MapController', ['$scope', '$http', function($scope, $http) {
+.controller('MapController', ['$scope', '$http', 'MapCenterService', function($scope, $http, mapCenterService) {
 
 	//Initialise
 	//Create map
@@ -235,6 +237,13 @@ angular.module('myApp.map', ['ngRoute'])
 	}
 
 	$scope.pullTagsFromServer = function(){
+
+		//Clean up
+		$scope.displayedTags = [];
+		for(var i = 0; i < $scope.renderedTags; i++){
+			$scope.renderedTags[i].setMap(null);
+		}
+
 		$http({
 		  	method: 'GET',
 		  	url: 'http://roughly-api.herokuapp.com/tag'
@@ -242,12 +251,15 @@ angular.module('myApp.map', ['ngRoute'])
 		    console.log(response.data._embedded.tag);
 		    for(var i = 0; i < response.data._embedded.tag.length; i++){
 		    	var element = response.data._embedded.tag[i];
-		    	$scope.displayedTags.push(element);
 		    	var newMarker = new google.maps.Marker({
 			    	position: new google.maps.LatLng(element.position.lat, element.position.lng),
 			    	map: $scope.map,
 			    	title: 'TAG'
 				});
+				element.marker = newMarker;
+				newMarker.element = element;
+		    	$scope.displayedTags.push(element);
+		    	$scope.renderedTags.push(newMarker);
 		    }
 		}, function errorCallback(response) {
 		    
@@ -260,9 +272,9 @@ angular.module('myApp.map', ['ngRoute'])
 	$scope.$on('mode-change', function(e, newMode) {  
         //Update the bottom form
         if(newMode == 'tagging'){
-        	$scope.startTrackingUserLocation();
+        	$scope.stopTrackingUserLocation();
         }else if(newMode == 'tag-detail'){
-        	$scope.startTrackingUserLocation();
+        	$scope.stopTrackingUserLocation();
         }else if(newMode == 'begin-run'){
         	$scope.stopTrackingUserLocation();
         }else if(newMode == 'during-run'){
@@ -274,5 +286,38 @@ angular.module('myApp.map', ['ngRoute'])
         }
     });
 
+}])
 
-}]);
+.service('MapCenterService', function() {
+  var self = this;
+  self.currentCenter = false;
+
+  self.setCenter = function(latLng){
+	self.currentCenter = latLng;
+  }
+
+  self.getCenter = function(){
+  	return self.currentCenter;
+  }
+
+})
+
+.service('TaggingService', function() {
+  	var self = this;
+  	self.currentPosition = false;
+	self.currentInfo = {};
+
+	self.setPosition = function(position){
+		self.currentPosition = position;
+	}
+
+	self.setData = function(data){
+		self.currentInfo = data;
+	}
+
+ 	self.submit = function(){
+ 		//Submit the current tag to the server
+ 		//Reject if data not complete
+ 	}
+
+});
