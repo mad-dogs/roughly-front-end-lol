@@ -14,7 +14,7 @@ angular.module('myApp.login', ['ngRoute'])
     $scope.formData = {};
 
     $scope.submit = function() {
-        
+      
       $http({
         method  : 'POST',
         url     : '',
