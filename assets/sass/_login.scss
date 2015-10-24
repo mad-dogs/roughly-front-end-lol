@@ -1,7 +1,17 @@
 .card-container.card {
-    width: 350px;
-    padding: 40px 40px;
     margin: 0 auto;
+}
+
+@include respond-min($tablet){
+
+    .login-container{
+        @include scut-vcenter-td;
+    }
+
+    .card-container.card{
+        width: 350px;
+        padding: 40px 40px;
+    }
 }
 
 .btn {
@@ -132,10 +142,6 @@
 .container {
     height: 100%;
     text-align: center;
-}
-
-.vcenter-container {
-  @include scut-vcenter-ib;
 }
 
 .login-page > .ng-scope {

@@ -327,12 +327,15 @@ angular.module('myApp.map', ['ngRoute'])
 
 }])
 
-.controller('TagDetailsForm', ['$scope', '$http', 'TaggingService', 'MapCenterService', function($scope, $http, taggingService, mapCenterService) {
+.controller('TagDetailsForm', ['$scope', '$http', 'TaggingService', 'MapCenterService', 'GlobalData',
+	function($scope, $http, taggingService, mapCenterService, globalData) {
 
 	$scope.numPeople = 0;
 	$scope.numDogs = 0;
 	$scope.selectedType = '1';
 	$scope.needs = [];
+	$scope.items = globalData.items;
+	$scope.tagTypes = globalData.tagTypes;
 
 	$scope.addNeed = function(){
 		var newNeed = {
@@ -421,5 +424,36 @@ angular.module('myApp.map', ['ngRoute'])
  		//Submit the current tag to the server
  		//Reject if data not complete
  	}
+
+})
+
+.service('GlobalData', function($http){
+	var self = this;
+	self.items = [];
+	self.tagTypes = [];
+
+	// Load in items
+	$http({
+	  	method: 'GET',
+	  	url: 'http://roughly-api.herokuapp.com/item'
+	}).then(function successCallback(response) {
+	    console.log(response.data._embedded.item);
+
+	    self.items = response.data._embedded.item;
+	}, function errorCallback(response) {
+	    
+	});
+
+	// And tag types.
+	$http({
+	  	method: 'GET',
+	  	url: 'http://roughly-api.herokuapp.com/tagtype'
+	}).then(function successCallback(response) {
+	    console.log(response.data._embedded.tagtype);
+
+	    self.tagTypes = response.data._embedded.tagtype;
+	}, function errorCallback(response) {
+	    
+	});
 
 });
