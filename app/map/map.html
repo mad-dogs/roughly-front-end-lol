@@ -1,20 +1,21 @@
 
-<a href="" ng-click="test()"></a>
-
-<div class="top-nav" ng-controller="TopNavController as topNav">
-	<a href="">Start Run</a>
-	<a href="">Tag</a>
+<div class="top-nav" ng-controller="TopNavController">
+	<a href="#" ng-repeat="action in currentActions" ng-click="action.toRun()">
+        <span>{{action.label}}</span>
+    </a>
 </div>
 
-<div class="map-holder" ng-controller="MapController as map">
-	Map holder
+<div class="map-holder" ng-controller="MapController">
+	<div id="mapFinalContainer" style="width:400px; height:400px;"></div>
 </div>
 
-<div class="bottom-actions" ng-controller="BottomActionsController as bottomActions"> 
-	Bottom actions
+<div class="bottom-actions" ng-controller="BottomActionsController"> 
+	<a href="#" ng-repeat="action in currentActions" ng-click="action.toRun()">
+        <span>{{action.label}}</span>
+    </a>
 </div>
 
-<div class="content-below-map" ng-controller="ContentBelowController as contentBelow">
-	Content below map
+<div class="content-below-map" ng-controller="ContentBelowController">
+	
 </div>
 
