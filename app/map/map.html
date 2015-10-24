@@ -1,6 +1,11 @@
 <div id="map-page">
 	
 	<div class="top-nav" ng-controller="TopNavController">
+
+		<div class="logo-container">
+			<img src="https://raw.githubusercontent.com/mad-dogs/resources/master/logo.png">
+		</div>
+
 		<div class="links">
 			<a class="btn btn-primary" ng-repeat="action in currentActions" ng-click="action.toRun()">
 		        <span>{{action.label}}</span>
