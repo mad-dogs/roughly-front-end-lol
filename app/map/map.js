@@ -14,6 +14,8 @@ angular.module('myApp.map', ['ngRoute'])
 	$scope.mode = 'initial';
 	$scope.currentPosition = false;
 
+	$scope.currentTagging = false;
+
 	$scope.watchId = false;
 
 	$scope.startTrackingLocation = function () {
@@ -38,31 +40,45 @@ angular.module('myApp.map', ['ngRoute'])
     	if($scope.mode == 'tagging'){
     		console.log('Tagging mode');
     		$scope.hideBottomContent();
+    		$scope.showActionsBar();
+
+    	}else if($scope.mode == 'tag-detail'){
+    		console.log('tag-detail mode');
+    		$scope.showBottomContent();
+			$scope.hideActionsBar();
 
     	}else if($scope.mode == 'begin-run'){
     		console.log('begin-run mode');
     		$scope.showBottomContent();
+    		$scope.hideActionsBar();
 
     	}else if($scope.mode == 'during-run'){
     		console.log('during-run mode');
+    		$scope.hideActionsBar();
     		
     	}else if($scope.mode == 'after-run'){
     		console.log('after-run mode');
+    		$scope.hideActionsBar();
     		
     	}else if($scope.mode == 'initial'){
     		console.log('initial mode');
     		$scope.hideBottomContent();
+    		$scope.hideActionsBar();
     		
     	}
+
+    	$scope.$broadcast ('mode-change', mode);
 
     }
 
 	$scope.showActionsBar = function(){
+		$('#map-page').addClass('show-actions');
 		
 	}    
 
 	$scope.hideActionsBar = function(){
-		
+		$('#map-page').removeClass('show-actions');
+
 	}
 
 	$scope.showBottomContent = function(){
@@ -71,6 +87,7 @@ angular.module('myApp.map', ['ngRoute'])
 		//Expand map
 		//Show bottom bar
 		$('#map-page').addClass('small');
+		window.dispatchEvent(new Event('resize'));
 	}
 
 	$scope.hideBottomContent = function(){
@@ -79,6 +96,8 @@ angular.module('myApp.map', ['ngRoute'])
 		//Expand map
 		//Show bottom bar
 		$('#map-page').removeClass('small');
+		window.dispatchEvent(new Event('resize'));
+
 	}
 
 	$scope.showError = function(){
@@ -131,6 +150,31 @@ angular.module('myApp.map', ['ngRoute'])
 		
 	}
 
+	$scope.gotoEndRunDetails = function(){
+		
+	}
+
+	$scope.clear = function(){
+
+	}
+
+	$scope.$on('mode-change', function(e, newMode) {  
+        //Update the bottom form
+        if(newMode == 'tagging'){
+        	$scope.clear();
+        }else if(newMode == 'tag-detail'){
+        	$scope.gotoTagForm();
+        }else if(newMode == 'begin-run'){
+        	$scope.gotoStartRunForm();
+        }else if(newMode == 'during-run'){
+        	$scope.gotoDuringRunForm();
+        }else if(newMode == 'after-run'){
+        	$scope.gotoEndRunDetails();
+        }else if(newMode == 'initial'){
+        	$scope.clear();
+        }
+    });
+
 }])
 
 .controller('BottomActionsController', ['$scope', function($scope) {
@@ -138,36 +182,42 @@ angular.module('myApp.map', ['ngRoute'])
 	$scope.currentActions = [];
 
 	$scope.currentActions.push({
-		'label': 'Click Me',
+		'label': 'Tag',
 		'toRun': function(){
-			alert('this');
+			console.log('we are tagging a position');
+
 		}
 	});
 
 }])
 
-.controller('MapController', ['$scope', function($scope) {
+.controller('MapController', ['$scope', '$http', function($scope, $http) {
 
 	//Initialise
 	//Create map
 	//Get reference 
 	//Setup functions to interact with map
 
+	$scope.displayedTags = [];
+	$scope.renderedTags = [];
+
 	$scope.map = false;
-	$scope.isTrackingLocation = false;
+	$scope.isTrackingLocation = true;
 
 	$scope.$on('receivedUpdateLocation', function(e) {  
         console.log('Map received updated position');       
 		if($scope.isTrackingLocation){
 			//Re-center map on current location
+			$scope.map.panTo(new google.maps.LatLng($scope.currentPosition.coords.latitude, $scope.currentPosition.coords.longitude));
+			$scope.map.setZoom(17);
 		}
     });
 
 	$scope.initMap = function(){
 
 		$scope.map = new google.maps.Map(document.getElementById('mapFinalContainer'), {
-			center: {lat: -34.397, lng: 150.644},
-			zoom: 8
+			center: {lat: 0, lng: 0},
+			zoom: 17
 		});		
 
 	}
@@ -184,7 +234,45 @@ angular.module('myApp.map', ['ngRoute'])
 		$scope.isTrackingLocation = false;
 	}
 
+	$scope.pullTagsFromServer = function(){
+		$http({
+		  	method: 'GET',
+		  	url: 'http://roughly-api.herokuapp.com/api/tag'
+		}).then(function successCallback(response) {
+		    console.log(response.data._embedded.tag);
+		    for(var i = 0; i < response.data._embedded.tag.length; i++){
+		    	var element = response.data._embedded.tag[i];
+		    	$scope.displayedTags.push(element);
+		    	var newMarker = new google.maps.Marker({
+			    	position: new google.maps.LatLng(element.position.lat, element.position.lng),
+			    	map: $scope.map,
+			    	title: 'TAG'
+				});
+		    }
+		}, function errorCallback(response) {
+		    
+		});
+	}
+
 	$scope.initMap();
+	$scope.pullTagsFromServer();
+
+	$scope.$on('mode-change', function(e, newMode) {  
+        //Update the bottom form
+        if(newMode == 'tagging'){
+        	$scope.startTrackingUserLocation();
+        }else if(newMode == 'tag-detail'){
+        	$scope.startTrackingUserLocation();
+        }else if(newMode == 'begin-run'){
+        	$scope.stopTrackingUserLocation();
+        }else if(newMode == 'during-run'){
+        	$scope.startTrackingUserLocation();
+        }else if(newMode == 'after-run'){
+        	$scope.stopTrackingUserLocation();
+        }else if(newMode == 'initial'){
+        	$scope.startTrackingUserLocation();
+        }
+    });
 
 
 }]);

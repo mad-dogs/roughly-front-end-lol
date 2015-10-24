@@ -11,32 +11,24 @@ angular.module('myApp.login', ['ngRoute'])
 
 .controller('LoginController', ['$scope', '$http', '$location', function($scope, $http, $location) {
  
-    $scope.formData = {};
+    $scope.formData = { email : "bob@bobmail.com", password : "password" };
 
     $scope.submit = function() {
       
       $http({
         method  : 'POST',
-        url     : '',
+        url     : 'http://roughly-api.herokuapp.com/login',
         data    : $.param($scope.formData),
         headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
       })
       .success(function(data) {
-        console.log(data);
 
-        if (!data.success) {
+        $location.path('/map');
 
-          alert(data.errors.name);
-
-        } else {
-      
-          $location.path('/map');
-          
-        }
       })
       .error(function(data) {
       
-        alert("Couldn't connect to the server");
+          alert("Log in failed. Please check your email and password then try again");
 
       });
 
