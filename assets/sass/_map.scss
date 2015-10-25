@@ -7,6 +7,9 @@ div#map-page {
 	overflow:hidden;
 
 	&.small {
+
+		overflow: auto;
+
 		.map-holder {
 			bottom:50%;
 		}
@@ -65,7 +68,7 @@ div#map-page {
 	.form {
 		position:absolute;
 		background: white;
-		height: 50%;
+		//height: 50%;
 		top: 100%;
 		left: 0;
 		width: 100%;
