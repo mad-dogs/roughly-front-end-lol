@@ -243,7 +243,10 @@ angular.module('myApp.map', ['ngRoute'])
 
 		$scope.map = new google.maps.Map(document.getElementById('mapFinalContainer'), {
 			center: {lat: 0, lng: 0},
-			zoom: 16
+			zoom: 16,
+			streetViewControl: false,
+			zoomControl: false,
+			mapTypeControl: false
 		});		
 
 		mapCenterService.setMap($scope.map);
