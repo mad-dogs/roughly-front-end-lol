@@ -207,22 +207,6 @@ angular.module('myApp.map', ['ngRoute'])
 
 }])
 
-.controller('BottomActionsController', ['$scope', 'MapCenterService', 'TaggingService', function($scope, mapCenterService, taggingService) {
-
-	$scope.currentActions = [];
-
-	/*$scope.currentActions.push({
-		'label': 'Tag',
-		'toRun': function(){
-			console.log('we are tagging a position');
-			var center = mapCenterService.getCenter();
-			taggingService.setPosition(center);
-			$scope.gotoMode('tag-detail');
-		}
-	});*/
-
-}])
-
 .controller('MapController', ['$scope', '$http', 'MapCenterService', 'GlobalData',
 	function($scope, $http, mapCenterService, globalData) {
 
@@ -342,8 +326,8 @@ angular.module('myApp.map', ['ngRoute'])
 
 }])
 
-.controller('TagDetailsForm', ['$scope', '$http', 'TaggingService', 'MapCenterService', 'GlobalData',
-	function($scope, $http, taggingService, mapCenterService, globalData) {
+.controller('TagDetailsForm', ['$scope', '$http', 'MapCenterService', 'GlobalData',
+	function($scope, $http, mapCenterService, globalData) {
 
 
 	$scope.numPeople = 1;
@@ -469,26 +453,6 @@ angular.module('myApp.map', ['ngRoute'])
 	}
 
 }])
-
-.service('TaggingService', function() {
-	var self = this;
-	self.currentPosition = false;
-	self.currentInfo = {};
-
-	self.setPosition = function(position){
-		self.currentPosition = position;
-	}
-
-	self.setData = function(data){
-		self.currentInfo = data;
-	}
-
-	self.submit = function(){
-		//Submit the current tag to the server
-		//Reject if data not complete
-	}
-
-})
 
 .service('GlobalData', function($http){
 	var self = this;
