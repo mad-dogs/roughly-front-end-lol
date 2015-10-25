@@ -287,12 +287,33 @@ angular.module('myApp.map', ['ngRoute'])
           // anchor: new google.maps.Point(0, 42)
         };
 
+        var opacity = 1;
+
+        if (tag.expiredDateTime != null)
+        {
+          var createdDateTimeString = tag.createdDateTime
+            .split (".")[0]
+            .replace ("T", " ")
+            .replace ("-", "/")
+            .replace ("-", "/");
+
+          var createdTimestamp = new Date(createdDateTimeString).getTime();
+          var nowTimestamp       = Math.floor(Date.now());
+          var diff               = nowTimestamp - createdTimestamp;
+          // var displayTime        = 259200000; // 3 days
+          // var displayTime        = 172800000; // 2 days
+
+          var displayTime        = 86400000;
+          opacity                =  Math.max(0, displayTime - diff) / displayTime;
+        }
+
 	    	var newMarker = new google.maps.Marker({
-		    	position: new google.maps.LatLng(tag.position.lat, tag.position.lng),
-		    	map: $scope.map,
-		    	title: 'TAG',
-          icon: image
-			});
+		    	position : new google.maps.LatLng(tag.position.lat, tag.position.lng),
+		    	map      : $scope.map,
+		    	title    : 'TAG',
+          icon     : image,
+          opacity  : opacity
+			  });
 
 			(function(newMarker){
 				tag.marker = newMarker;
