@@ -10,7 +10,7 @@
 					</select>
 				</div>
 				<div class="col-xs-4">
-					<input type="number" ng-model="inventoryItem.itemQuantity" class="form-control">
+					<input type="number" pattern="[0-9]*" inputmode="numeric" ng-model="inventoryItem.itemQuantity" class="form-control">
 				</div>
 				<div class="col-xs-3">
 					<button class="btn btn-danger" ng-click="removeItem(inventoryItem)">X</button>
