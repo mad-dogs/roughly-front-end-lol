@@ -17,15 +17,9 @@
 
 	<div class="map-holder" ng-controller="MapController">
 		<div id="mapFinalContainer"></div>
-		<div class="crosshair {{ showCrosshair ? 'showCrosshair' : '' }}">
+		<div class="crosshair {{ !showCrosshair ? '' : 'showCrosshair' }}">
 			<img src="https://raw.githubusercontent.com/mad-dogs/resources/master/pin.png">
 		</div>
-	</div>
-
-	<div class="bottom-bar" ng-controller="BottomActionsController"> 
-		<a ng-repeat="action in currentActions" ng-click="action.toRun()">
-	        <span>{{action.label}}</span>
-	    </a>
 	</div>
 
 	<div class="content-below-map form" ng-controller="ContentBelowController">
