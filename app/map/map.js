@@ -265,10 +265,35 @@ angular.module('myApp.map', ['ngRoute'])
 				map: $scope.map,
 				title: 'TAG'
 			});
-			tag.marker = newMarker;
-			newMarker.tag = tag;
-			$scope.displayedTags.push(tag);
-			$scope.renderedTags.push(newMarker);
+
+			(function(newMarker){
+				tag.marker = newMarker;
+				newMarker.tag = tag;
+				$scope.displayedTags.push(tag);
+				$scope.renderedTags.push(newMarker);
+
+				if(tag.needItems.length > 0){
+
+					var contentString = '<div class="infobox-title">Needs</div>';
+
+					for(var j = 0; j < tag.needItems.length ; j++){
+						var need = tag.needItems[j];
+						contentString += '<div class="infobox-need">'+need.description+'</div>';
+					}
+
+					var infoWindow = new google.maps.InfoWindow({
+						content: contentString
+					});
+
+					newMarker.infoWindow = infoWindow;
+
+					newMarker.addListener('click', function() {
+						this.infoWindow.open($scope.map, newMarker);
+					});
+				}
+				
+			})(newMarker);
+
 		}
 	}
 
