@@ -291,6 +291,10 @@ angular.module('myApp.map', ['ngRoute'])
 						if(thisTag.needItems[q].description == item){
 							foundNeed = thisTag.needs[q].id;
 							itemId = thisTag.needItems[q].id;
+
+							delete thisTag.needItems[q];
+							delete thisTag.needs[q];
+
 							break;
 						}
 					}
@@ -299,11 +303,13 @@ angular.module('myApp.map', ['ngRoute'])
 
 			var timestamp = (new Date()).toISOString();
 
+
+
 			$http({
 				headers: {'Content-Type': 'application/json'},
 				method: 'PUT',
 				url: 'http://roughly-api.herokuapp.com/inventory/'+inventory,
-				data: {'item': 'item/'+itemId, 'fulfilled':'need/'+foundNeed, 'fulfilledDatetime': (timestamp.substr(0 , timestamp.indexOf('Z') ))}
+				data: {'item': 'item/'+itemId, 'fulfilled':'need/'+foundNeed, 'fulfilledDateTime': (timestamp.substr(0 , timestamp.indexOf('Z') ))}
 
 			}).then(function successCallback(response) {
 				
@@ -643,6 +649,9 @@ angular.module('myApp.map', ['ngRoute'])
 	$scope.run = globalData.currentRun;
 	$scope.inventory = [];
 
+	var pos = $scope.currentPosition.coords;
+	mapCenterService.plotRoute(new google.maps.LatLng(pos.latitude, pos.longitude));
+
 	// Loop through the inventory and parse the data.
 	var itemsById = {};
 	for (var i = 0; i < $scope.run.inventoryItems.length; i++) {
@@ -751,7 +760,9 @@ angular.module('myApp.map', ['ngRoute'])
 		var waypts = [];
 
 		for(var i = 0; i<tags.length;i++){
-
+			if(i > 5){
+				break;
+			}
 			var tag = tags[i];
 			waypts.push({location: new google.maps.LatLng(tag.position.lat, tag.position.lng), stopover: false});
 
@@ -762,7 +773,7 @@ angular.module('myApp.map', ['ngRoute'])
 			destination: startEnd,
 			waypoints: waypts,
 			optimizeWaypoints: true,
-			travelMode: google.maps.TravelMode.DRIVING
+			travelMode: google.maps.TravelMode.WALKING
 		}, function(response, status) {
 			if (status === google.maps.DirectionsStatus.OK) {
 				self.directions.setDirections(response);
