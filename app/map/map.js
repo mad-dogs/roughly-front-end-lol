@@ -572,7 +572,65 @@ angular.module('myApp.map', ['ngRoute'])
 	}
 
 	$scope.finishRun = function(){
-		
+
+		var runToUpdate = $scope.run;
+
+		// Loop through the inventory and parse the data.
+		var itemsById = {};
+		for (var i = 0; i < $scope.inventory.length; i++) {
+			var item = $scope.inventory[i];
+			item.itemsGiven = item.initialQty - item.qty;
+			itemsById['key' + item.id] = item;
+		}
+
+		for (var i = 0; i < runToUpdate.inventory.length; i++) {
+			var itemId = runToUpdate.inventoryItems[i].id;
+			var inventoryItem = itemsById['key' + itemId];
+
+			if (inventoryItem.itemsGiven > 0){
+				runToUpdate.inventory[i].fulfilledDateTime = (new Date()).toISOString();
+				runToUpdate.inventory[i].fulfilledDateTime = runToUpdate.inventory[i].fulfilledDateTime.substring(0, runToUpdate.inventory[i].fulfilledDateTime.indexOf('Z'));
+				console.log(runToUpdate.inventory[i].fulfilledDateTime);
+				inventoryItem.itemsGiven--;
+			}
+		}
+
+		var runid = runToUpdate.id;
+		delete runToUpdate.id;
+		delete runToUpdate.createdDateTime;
+		delete runToUpdate.inventoryItems;
+		delete runToUpdate._links;
+		runToUpdate.completedDateTime = (new Date()).toISOString();
+		runToUpdate.completedDateTime = runToUpdate.completedDateTime.substring(0, runToUpdate.completedDateTime.indexOf('Z'));
+
+		$http({
+			headers: {'Content-Type': 'application/json'},
+		  	method: 'PUT',
+		  	url: 'http://roughly-api.herokuapp.com/run/' + runid,
+		  	data: runToUpdate
+
+		}).then(function successCallback(response) {
+
+			console.log(response);
+
+			// var location = response.headers('Location');
+
+			// //We are happy, go back to initial mode
+			// $http({
+			// 	method: 'GET',
+			// 	url: location
+			// }).then(function successCallback(response){
+
+			// 	$scope.gotoMode('during-run');
+			// 	globalData.currentRun = response.data;
+
+			// }, function errorCallback(){
+
+			// });
+
+		}, function errorCallback(response) {
+		    
+		});
 	}
 }])
 
