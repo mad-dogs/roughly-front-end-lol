@@ -54,6 +54,7 @@ angular.module('myApp.map', ['ngRoute'])
 
 		}else if($scope.mode == 'during-run'){
 			console.log('during-run mode');
+			$scope.showBottomContentHidden();
 			$scope.hideActionsBar();
 			
 		}else if($scope.mode == 'after-run'){
@@ -81,12 +82,23 @@ angular.module('myApp.map', ['ngRoute'])
 
 	}
 
+	$scope.showBottomContentHidden = function(){
+		//Scroll to top
+		//Disable scroll
+		//Expand map
+		//Show bottom bar
+		$('#map-page').removeClass('small').addClass('medium');
+		setTimeout(function(){
+			window.dispatchEvent(new Event('resize'));
+		}, 1000);
+	}
+
 	$scope.showBottomContent = function(){
 		//Scroll to top
 		//Disable scroll
 		//Expand map
 		//Show bottom bar
-		$('#map-page').addClass('small');
+		$('#map-page').removeClass('medium').addClass('small');
 		setTimeout(function(){
 			window.dispatchEvent(new Event('resize'));
 		}, 1000);
@@ -97,7 +109,7 @@ angular.module('myApp.map', ['ngRoute'])
 		//Disable scroll
 		//Expand map
 		//Show bottom bar
-		$('#map-page').removeClass('small');
+		$('#map-page').removeClass('small medium');
 		setTimeout(function(){
 			window.dispatchEvent(new Event('resize'));
 		}, 1000);
@@ -486,9 +498,11 @@ angular.module('myApp.map', ['ngRoute'])
 		};
 
 		for (var i = 0; i < $scope.inventory.length; i++) {
-			runToAdd.inventory.push({
-				item: 'item/' + $scope.inventory[i].itemType
-			});
+			for (var j = 0; j < $scope.inventory[i].itemQuantity; j++) {
+				runToAdd.inventory.push({
+					item: 'item/' + $scope.inventory[i].itemType
+				});
+			}
 		}
 
 		$http({
@@ -526,9 +540,40 @@ angular.module('myApp.map', ['ngRoute'])
 	function($scope, $http, mapCenterService, globalData) {
 
 	$scope.run = globalData.currentRun;
+	$scope.inventory = [];
 
-	console.log($scope.run);
+	// Loop through the inventory and parse the data.
+	var itemsById = {};
+	for (var i = 0; i < $scope.run.inventoryItems.length; i++) {
+		var key = 'key' + $scope.run.inventoryItems[i].id;
+		if (typeof itemsById[key] == 'undefined'){
+			itemsById[key] = $scope.run.inventoryItems[i];
+			itemsById[key]['initialQty'] = 0;
+			itemsById[key]['qty'] = 0;
 
+			$scope.inventory.push(itemsById[key]);
+		}
+		itemsById[key]['initialQty']++;
+		itemsById[key]['qty']++;
+	}
+
+	$scope.decreaseQuantity = function(item){
+		item.qty--;
+		if (item.qty < 0){
+			item.qty = 0;
+		}
+	}
+
+	$scope.increaseQuantity = function(item){
+		item.qty++;
+		if (item.qty > item.initialQty){
+			item.qty = item.initialQty;
+		}
+	}
+
+	$scope.finishRun = function(){
+		
+	}
 }])
 
 .service('MapCenterService', ['GlobalData', function(globalData) {
