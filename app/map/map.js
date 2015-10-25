@@ -614,6 +614,9 @@ angular.module('myApp.map', ['ngRoute'])
 				console.log(runToUpdate.inventory[i].fulfilledDateTime);
 				inventoryItem.itemsGiven--;
 			}
+
+			runToUpdate.inventory[i].item = 'item/'+runToUpdate.inventory[i].itemId;
+			// delete runToUpdate.inventory[i].itemId;
 		}
 
 		var runid = runToUpdate.id;
@@ -632,22 +635,7 @@ angular.module('myApp.map', ['ngRoute'])
 
 		}).then(function successCallback(response) {
 
-			console.log(response);
-
-			// var location = response.headers('Location');
-
-			// //We are happy, go back to initial mode
-			// $http({
-			// 	method: 'GET',
-			// 	url: location
-			// }).then(function successCallback(response){
-
-			// 	$scope.gotoMode('during-run');
-			// 	globalData.currentRun = response.data;
-
-			// }, function errorCallback(){
-
-			// });
+			$scope.gotoMode('after-run');
 
 		}, function errorCallback(response) {
 		    
