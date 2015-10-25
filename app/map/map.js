@@ -346,14 +346,14 @@ angular.module('myApp.map', ['ngRoute'])
 
 	$scope.numPeople = 1;
 	$scope.numDogs = 0;
-	$scope.selectedType = '1';
 	$scope.needs = [];
-	$scope.items = globalData.items;
+	$scope.items = globalData.itemsNoMeal;
 	$scope.tagTypes = globalData.tagTypes;
+	$scope.selectedType = globalData.tagTypes[0].id;
 
 	$scope.addNeed = function(){
 		var newNeed = {
-			needType: "1",
+			needType: $scope.items[0].id,
 			needQuantity: 1,
 		}
 
@@ -453,6 +453,7 @@ angular.module('myApp.map', ['ngRoute'])
 .service('GlobalData', function($http){
 	var self = this;
 	self.items = [];
+	self.itemsNoMeal = [];
 	self.tagTypes = [];
 	self.tags = [];
 
@@ -464,6 +465,13 @@ angular.module('myApp.map', ['ngRoute'])
 	    console.log(response.data._embedded.item);
 
 	    self.items = response.data._embedded.item;
+	    self.items.reverse();
+
+	    for (var i = 0; i < self.items.length; i++) {
+	    	if (self.items[i].sourcingTime > -1){
+	    		self.itemsNoMeal.push(self.items[i]);
+	    	}
+	    }
 	}, function errorCallback(response) {
 	    
 	});

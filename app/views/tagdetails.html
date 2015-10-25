@@ -11,8 +11,7 @@
 		</div>
 		<div class="form-group">
 			<label for="tag-type">Tag Type</label>
-			<select ng-model="selectedType" id="tag-type" class="form-control">
-				<option ng-repeat="type in tagTypes" value="{{type.id}}">{{type.type}}</option>
+			<select ng-model="selectedType" id="tag-type" class="form-control" ng-options="type.id as type.type for type in tagTypes">
 			</select>
 		</div>
 	</div>
@@ -21,8 +20,7 @@
 		<button class="btn btn-default need-button" ng-click="addNeed()">Add Need</button>
 		<div ng-repeat="need in needs" class="form-group">
 			<div class="col-xs-6">
-				<select ng-model="need.needType" class="form-control">
-					<option ng-repeat="item in items" value="{{item.id}}">{{item.description}}</option>
+				<select ng-model="need.needType" class="form-control" ng-options="item.id as item.description for item in items">
 				</select>
 			</div>
 			<div class="col-xs-3">
