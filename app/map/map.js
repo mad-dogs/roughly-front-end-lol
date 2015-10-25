@@ -344,7 +344,7 @@ angular.module('myApp.map', ['ngRoute'])
 .controller('TagDetailsForm', ['$scope', '$http', 'TaggingService', 'MapCenterService', 'GlobalData',
 	function($scope, $http, taggingService, mapCenterService, globalData) {
 
-	$scope.numPeople = 0;
+	$scope.numPeople = 1;
 	$scope.numDogs = 0;
 	$scope.selectedType = '1';
 	$scope.needs = [];
