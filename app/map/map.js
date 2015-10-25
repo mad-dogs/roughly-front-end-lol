@@ -417,6 +417,81 @@ angular.module('myApp.map', ['ngRoute'])
 
 }])
 
+.controller('StartRunForm', ['$scope', '$http', 'TaggingService', 'MapCenterService', 'GlobalData',
+	function($scope, $http, taggingService, mapCenterService, globalData) {
+
+	$scope.inventory = [];
+	$scope.items = globalData.items;
+
+	// Add meals as a default to inventory.
+	var meals = {
+		itemType: $scope.items[0].id,
+		itemQuantity: 20,
+	}
+	$scope.inventory.push(meals);
+
+	$scope.addInventoryItem = function(){
+		var index = $scope.inventory.length;
+		if (index >= $scope.items.length){
+			index = 0;
+		}
+		var newItem = {
+			itemType: $scope.items[index].id,
+			itemQuantity: 1,
+		}
+
+		$scope.inventory.push(newItem);
+	}
+
+	$scope.removeItem = function(item){
+		$scope.inventory = $scope.inventory.filter(function (el) {
+            return el !== item;
+        });
+	}
+
+	$scope.submitRun = function(){
+
+		var runToAdd = {
+			inventory: []
+		};
+
+		for (var i = 0; i < $scope.inventory.length; i++) {
+			runToAdd.inventory.push({
+				item: 'item/' + $scope.inventory[i].itemType
+			});
+		}
+
+		$http({
+			headers: {'Content-Type': 'application/json'},
+		  	method: 'POST',
+		  	url: 'http://roughly-api.herokuapp.com/run',
+		  	data: runToAdd
+
+		}).then(function successCallback(response) {
+
+			var location = response.headers('Location');
+
+			//We are happy, go back to initial mode
+			$http({
+				method: 'GET',
+				url: location
+			}).then(function successCallback(response){
+
+				$scope.gotoMode('during-run');
+				globalData.currentRun = response.data;
+
+			}, function errorCallback(){
+
+			});
+
+		}, function errorCallback(response) {
+		    
+		});
+
+	}
+
+}])
+
 .service('MapCenterService', function() {
   var self = this;
   self.currentMap = false;
@@ -460,6 +535,7 @@ angular.module('myApp.map', ['ngRoute'])
 	self.itemsNoMeal = [];
 	self.tagTypes = [];
 	self.tags = [];
+	self.currentRun = null;
 
 	// Load in items
 	$http({
