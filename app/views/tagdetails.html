@@ -19,11 +19,11 @@
 		<label>Needs</label>
 		<button class="btn btn-default need-button" ng-click="addNeed()">Add Need</button>
 		<div ng-repeat="need in needs" class="form-group">
-			<div class="col-xs-6">
+			<div class="col-xs-5">
 				<select ng-model="need.needType" class="form-control" ng-options="item.id as item.description for item in items">
 				</select>
 			</div>
-			<div class="col-xs-3">
+			<div class="col-xs-4">
 				<input type="number" ng-model="need.needQuantity" class="form-control">
 			</div>
 			<div class="col-xs-3">

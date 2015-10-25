@@ -1,7 +1,24 @@
 <div class="start-run-form" ng-controller="StartRunForm">
 
-	<div>
-		Start Run Details Page		
+	<div class="need-section">
+		<label>Inventory</label>
+		<button class="btn btn-default need-button" ng-click="addInventoryItem()">Add Items</button>
+		<div class="form-group">
+			<div ng-repeat="inventoryItem in inventory" class="form-group">
+				<div class="col-xs-5">
+					<select ng-model="inventoryItem.itemType" class="form-control" ng-options="item.id as item.description for item in items">
+					</select>
+				</div>
+				<div class="col-xs-4">
+					<input type="number" ng-model="inventoryItem.itemQuantity" class="form-control">
+				</div>
+				<div class="col-xs-3">
+					<button class="btn btn-danger" ng-click="removeItem(inventoryItem)">X</button>
+				</div>
+			</div>
+		</div>
 	</div>
+
+	<input type="submit" value="Start Run" ng-click="submitRun()" class="btn btn-primary">
 
 </div>
