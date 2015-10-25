@@ -207,8 +207,8 @@ angular.module('myApp.map', ['ngRoute'])
 
 }])
 
-.controller('MapController', ['$scope', '$http', 'MapCenterService', 'GlobalData',
-	function($scope, $http, mapCenterService, globalData) {
+.controller('MapController', ['$scope', '$http', '$compile', 'MapCenterService', 'GlobalData',
+	function($scope, $http, $compile, mapCenterService, globalData) {
 
 	//Initialise
 	//Create map
@@ -239,6 +239,15 @@ angular.module('myApp.map', ['ngRoute'])
 		}
 	});
 
+	$scope.closeAllInfoWindows = function(){
+		for(var k = 0 ; k < $scope.renderedTags.length; k++){
+			if('infoWindow' in $scope.renderedTags[k] && typeof $scope.renderedTags[k].infoWindow !== 'undefined'){
+				$scope.renderedTags[k].infoWindow.close();
+			}
+
+		}
+	}
+
 	$scope.initMap = function(){
 
 		$scope.map = new google.maps.Map(document.getElementById('mapFinalContainer'), {
@@ -250,6 +259,50 @@ angular.module('myApp.map', ['ngRoute'])
 		});		
 
 		mapCenterService.setMap($scope.map);
+
+		$('body').on('click', '.give-button', function(e){
+			e.preventDefault();
+			var tag = $(this).data('tag-id');
+			var item = $(this).data('item-id');
+			var inventory = globalData.currentRun.inventory[0].id;
+			var itemId = 0;
+
+			var foundNeed = 0;
+
+			for(var p = 0; p < globalData.tags.length; p++){
+				var thisTag = globalData.tags[p];
+				console.log(thisTag.id, tag);
+				if(thisTag.id == tag){
+					console.log(thisTag);
+					for(var q = 0; q < thisTag.needItems.length; q++){
+						console.log(thisTag.needItems[q].description, item);
+						if(thisTag.needItems[q].description == item){
+							foundNeed = thisTag.needs[q].id;
+							itemId = thisTag.needItems[q].id;
+							break;
+						}
+					}
+				}
+			}
+
+			var timestamp = (new Date()).toISOString();
+
+			$http({
+				headers: {'Content-Type': 'application/json'},
+				method: 'PUT',
+				url: 'http://roughly-api.herokuapp.com/inventory/'+inventory,
+				data: {'item': 'item/'+itemId, 'fulfilled':'need/'+foundNeed, 'fulfilledDatetime': (timestamp.substr(0 , timestamp.indexOf('Z') ))}
+
+			}).then(function successCallback(response) {
+				
+				$scope.closeAllInfoWindows();
+				$scope.updateMapWithTags();
+
+			}, function errorCallback(response) {
+				
+			});
+
+		});
 
 	}
 
@@ -263,7 +316,7 @@ angular.module('myApp.map', ['ngRoute'])
         var tag = globalData.tags[i];
 
         var image = {
-          url: tag.needItems.length > 0
+          url: typeof tag.needItems != 'undefined' && tag.needItems.length > 0
             ? 'https://raw.githubusercontent.com/mad-dogs/resources/master/need-pin.png'
             : 'https://raw.githubusercontent.com/mad-dogs/resources/master/pin.png',
           
@@ -279,10 +332,10 @@ angular.module('myApp.map', ['ngRoute'])
 		    	position: new google.maps.LatLng(tag.position.lat, tag.position.lng),
 		    	map: $scope.map,
 		    	title: 'TAG',
-          icon: image
+          		icon: image
 			});
 
-			(function(newMarker){
+			(function(newMarker, tag){
 				tag.marker = newMarker;
 				newMarker.tag = tag;
 				$scope.displayedTags.push(tag);
@@ -290,25 +343,50 @@ angular.module('myApp.map', ['ngRoute'])
 
 				if(tag.needItems.length > 0){
 
-					var contentString = '<div class="infobox-title">Needs</div>';
-
-					for(var j = 0; j < tag.needItems.length ; j++){
-						var need = tag.needItems[j];
-						contentString += '<div class="infobox-need">'+need.description+'</div>';
-					}
-
 					var infoWindow = new google.maps.InfoWindow({
-						content: contentString
+						content: ""
 					});
+
+					// var $contentString = $(contentString);
+					// $contentString.find('a').click(function(e){
+					// 	e.preventDefault();
+					// });
 
 					newMarker.infoWindow = infoWindow;
 
 					newMarker.addListener('click', function() {
-						this.infoWindow.open($scope.map, newMarker);
+						var self = this;
+						$scope.closeAllInfoWindows();
+
+						var contentString = '<div><div class="infobox-title">Needs</div>';
+
+						var needObjs = {};
+						for(var j = 0; j < tag.needItems.length ; j++){
+							var needItem = tag.needItems[j];
+							console.log(needItem);
+							if(!needObjs.hasOwnProperty(needItem.description)){
+								needObjs[needItem.description] = 0;
+							}
+							needObjs[needItem.description]++;
+							//contentString += '<div class="infobox-need">'+need.description+'</div>';
+						}
+
+						for (var property in needObjs) {
+							if (needObjs.hasOwnProperty(property)) {
+								contentString += '<div class="infobox-need">'+property+' '+'x'+needObjs[property]+'</div><a data-tag-id="'+tag.id+'" data-item-id="'+property+'" class="give-button">Give 1</a>';
+							}
+						}
+
+						contentString += '</div>';
+
+						newMarker.infoWindow.setContent(contentString);
+						
+						self.infoWindow.open($scope.map, newMarker);
+						
 					});
 				}
 				
-			})(newMarker);
+			})(newMarker, tag);
 
 		}
 	}
@@ -624,5 +702,18 @@ angular.module('myApp.map', ['ngRoute'])
 	}, function errorCallback(response) {
 		
 	});
+
+	self.refreshTags = function(){
+		$http({
+			method: 'GET',
+			url: 'http://roughly-api.herokuapp.com/tag'
+		}).then(function successCallback(response) {
+			console.log(response.data._embedded.tag);
+
+			self.tags = response.data._embedded.tag;
+		}, function errorCallback(response) {
+			
+		});
+	}
 
 });
