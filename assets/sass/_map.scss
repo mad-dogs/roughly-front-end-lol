@@ -41,6 +41,7 @@ div#map-page {
 		background:#FFF;
 		width:100%;
 		padding:10px;
+		border-bottom: $grey solid 1px;
 
 		.links {
 			float: right;
@@ -49,7 +50,7 @@ div#map-page {
 
 	.map-holder {
 		position: absolute;
-		top: 56px;
+		top: $header-height;
 		left:0;
 		width:100%;
 		bottom:0;
@@ -63,12 +64,18 @@ div#map-page {
 
 	.form {
 		position:absolute;
-		background:cyan;
-		height:50%;
-		top:100%;
-		left:0;
-		width:100%;
-		transition:top 0.2s ease-in-out;
+		background: white;
+		height: 50%;
+		top: 100%;
+		left: 0;
+		width: 100%;
+		transition: top 0.2s ease-in-out;
+		border-top: solid 1px $grey;
+		overflow-y: auto;
+
+		.inner{
+			padding: 16px;
+		}
 	}
 
 	.bottom-bar {
@@ -104,4 +111,14 @@ div#map-page {
 	.crosshair.showCrosshair {
 		opacity: 1;
 	}
+}
+
+.need-section{
+	label{
+		line-height: 36px;
+	}
+}
+
+.need-button{
+	float: right;
 }
