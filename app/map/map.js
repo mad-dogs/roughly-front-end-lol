@@ -352,8 +352,12 @@ angular.module('myApp.map', ['ngRoute'])
 	$scope.selectedType = globalData.tagTypes[0].id;
 
 	$scope.addNeed = function(){
+		var index = $scope.needs.length;
+		if (index >= $scope.items.length){
+			index = 0;
+		}
 		var newNeed = {
-			needType: $scope.items[0].id,
+			needType: $scope.items[index].id,
 			needQuantity: 1,
 		}
 
