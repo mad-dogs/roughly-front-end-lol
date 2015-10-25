@@ -345,18 +345,23 @@ angular.module('myApp.map', ['ngRoute'])
 .controller('TagDetailsForm', ['$scope', '$http', 'TaggingService', 'MapCenterService', 'GlobalData',
 	function($scope, $http, taggingService, mapCenterService, globalData) {
 
-		$scope.numPeople = 0;
-		$scope.numDogs = 0;
-		$scope.selectedType = '1';
-		$scope.needs = [];
-		$scope.items = globalData.items;
-		$scope.tagTypes = globalData.tagTypes;
 
-		$scope.addNeed = function(){
-			var newNeed = {
-				needType: "1",
-				needQuantity: 1,
-			}
+	$scope.numPeople = 1;
+	$scope.numDogs = 0;
+	$scope.needs = [];
+	$scope.items = globalData.itemsNoMeal;
+	$scope.tagTypes = globalData.tagTypes;
+	$scope.selectedType = globalData.tagTypes[0].id;
+
+	$scope.addNeed = function(){
+		var index = $scope.needs.length;
+		if (index >= $scope.items.length){
+			index = 0;
+		}
+		var newNeed = {
+			needType: $scope.items[index].id,
+			needQuantity: 1,
+		}
 
 			$scope.needs.push(newNeed);
 		}
@@ -488,6 +493,7 @@ angular.module('myApp.map', ['ngRoute'])
 .service('GlobalData', function($http){
 	var self = this;
 	self.items = [];
+	self.itemsNoMeal = [];
 	self.tagTypes = [];
 	self.tags = [];
 
@@ -498,7 +504,15 @@ angular.module('myApp.map', ['ngRoute'])
 	}).then(function successCallback(response) {
 		console.log(response.data._embedded.item);
 
-		self.items = response.data._embedded.item;
+	    self.items = response.data._embedded.item;
+	    self.items.reverse();
+
+	    for (var i = 0; i < self.items.length; i++) {
+	    	if (self.items[i].sourcingTime > -1){
+	    		self.itemsNoMeal.push(self.items[i]);
+	    	}
+	    }
+
 	}, function errorCallback(response) {
 		
 	});
