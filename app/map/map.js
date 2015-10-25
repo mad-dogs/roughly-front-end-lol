@@ -54,6 +54,7 @@ angular.module('myApp.map', ['ngRoute'])
 
 		}else if($scope.mode == 'during-run'){
 			console.log('during-run mode');
+			$scope.showBottomContentHidden();
 			$scope.hideActionsBar();
 			
 		}else if($scope.mode == 'after-run'){
@@ -81,12 +82,23 @@ angular.module('myApp.map', ['ngRoute'])
 
 	}
 
+	$scope.showBottomContentHidden = function(){
+		//Scroll to top
+		//Disable scroll
+		//Expand map
+		//Show bottom bar
+		$('#map-page').removeClass('small').addClass('medium');
+		setTimeout(function(){
+			window.dispatchEvent(new Event('resize'));
+		}, 1000);
+	}
+
 	$scope.showBottomContent = function(){
 		//Scroll to top
 		//Disable scroll
 		//Expand map
 		//Show bottom bar
-		$('#map-page').addClass('small');
+		$('#map-page').removeClass('medium').addClass('small');
 		setTimeout(function(){
 			window.dispatchEvent(new Event('resize'));
 		}, 1000);
@@ -97,7 +109,7 @@ angular.module('myApp.map', ['ngRoute'])
 		//Disable scroll
 		//Expand map
 		//Show bottom bar
-		$('#map-page').removeClass('small');
+		$('#map-page').removeClass('small medium');
 		setTimeout(function(){
 			window.dispatchEvent(new Event('resize'));
 		}, 1000);
@@ -177,7 +189,7 @@ angular.module('myApp.map', ['ngRoute'])
 	}
 
 	$scope.gotoDuringRunForm = function(){
-		
+		$scope.currentContent = 'views/duringrun.html';
 	}
 
 	$scope.gotoEndRunDetails = function(){
@@ -328,12 +340,35 @@ angular.module('myApp.map', ['ngRoute'])
           // anchor: new google.maps.Point(0, 42)
         };
 
+        var opacity = 1;
+
+        if (tag.expiredDateTime != null)
+        {
+          var createdDateTimeString = tag.createdDateTime
+            .split (".")[0]
+            .replace ("T", " ")
+            .replace ("-", "/")
+            .replace ("-", "/");
+
+          var createdTimestamp = new Date(createdDateTimeString).getTime();
+          var nowTimestamp       = Math.floor(Date.now());
+          var diff               = nowTimestamp - createdTimestamp;
+          // var displayTime        = 259200000; // 3 days
+          // var displayTime        = 172800000; // 2 days
+
+          var displayTime        = 86400000;
+          opacity                =  Math.max(0, displayTime - diff) / displayTime;
+        }
+
 	    	var newMarker = new google.maps.Marker({
-		    	position: new google.maps.LatLng(tag.position.lat, tag.position.lng),
-		    	map: $scope.map,
-		    	title: 'TAG',
-          		icon: image
-			});
+
+		    	position : new google.maps.LatLng(tag.position.lat, tag.position.lng),
+		    	map      : $scope.map,
+		    	title    : 'TAG',
+          icon     : image,
+          opacity  : opacity
+			  });
+
 
 			(function(newMarker, tag){
 				tag.marker = newMarker;
@@ -564,9 +599,11 @@ angular.module('myApp.map', ['ngRoute'])
 		};
 
 		for (var i = 0; i < $scope.inventory.length; i++) {
-			runToAdd.inventory.push({
-				item: 'item/' + $scope.inventory[i].itemType
-			});
+			for (var j = 0; j < $scope.inventory[i].itemQuantity; j++) {
+				runToAdd.inventory.push({
+					item: 'item/' + $scope.inventory[i].itemType
+				});
+			}
 		}
 
 		$http({
@@ -598,6 +635,92 @@ angular.module('myApp.map', ['ngRoute'])
 
 	}
 
+}])
+
+.controller('DuringRunForm', ['$scope', '$http', 'MapCenterService', 'GlobalData',
+	function($scope, $http, mapCenterService, globalData) {
+
+	$scope.run = globalData.currentRun;
+	$scope.inventory = [];
+
+	// Loop through the inventory and parse the data.
+	var itemsById = {};
+	for (var i = 0; i < $scope.run.inventoryItems.length; i++) {
+		var key = 'key' + $scope.run.inventoryItems[i].id;
+		if (typeof itemsById[key] == 'undefined'){
+			itemsById[key] = $scope.run.inventoryItems[i];
+			itemsById[key]['initialQty'] = 0;
+			itemsById[key]['qty'] = 0;
+
+			$scope.inventory.push(itemsById[key]);
+		}
+		itemsById[key]['initialQty']++;
+		itemsById[key]['qty']++;
+	}
+
+	$scope.decreaseQuantity = function(item){
+		item.qty--;
+		if (item.qty < 0){
+			item.qty = 0;
+		}
+	}
+
+	$scope.increaseQuantity = function(item){
+		item.qty++;
+		if (item.qty > item.initialQty){
+			item.qty = item.initialQty;
+		}
+	}
+
+	$scope.finishRun = function(){
+
+		var runToUpdate = $scope.run;
+
+		// Loop through the inventory and parse the data.
+		var itemsById = {};
+		for (var i = 0; i < $scope.inventory.length; i++) {
+			var item = $scope.inventory[i];
+			item.itemsGiven = item.initialQty - item.qty;
+			itemsById['key' + item.id] = item;
+		}
+
+		for (var i = 0; i < runToUpdate.inventory.length; i++) {
+			var itemId = runToUpdate.inventoryItems[i].id;
+			var inventoryItem = itemsById['key' + itemId];
+
+			if (inventoryItem.itemsGiven > 0){
+				runToUpdate.inventory[i].fulfilledDateTime = (new Date()).toISOString();
+				runToUpdate.inventory[i].fulfilledDateTime = runToUpdate.inventory[i].fulfilledDateTime.substring(0, runToUpdate.inventory[i].fulfilledDateTime.indexOf('Z'));
+				console.log(runToUpdate.inventory[i].fulfilledDateTime);
+				inventoryItem.itemsGiven--;
+			}
+
+			runToUpdate.inventory[i].item = 'item/'+runToUpdate.inventory[i].itemId;
+			// delete runToUpdate.inventory[i].itemId;
+		}
+
+		var runid = runToUpdate.id;
+		delete runToUpdate.id;
+		delete runToUpdate.createdDateTime;
+		delete runToUpdate.inventoryItems;
+		delete runToUpdate._links;
+		runToUpdate.completedDateTime = (new Date()).toISOString();
+		runToUpdate.completedDateTime = runToUpdate.completedDateTime.substring(0, runToUpdate.completedDateTime.indexOf('Z'));
+
+		$http({
+			headers: {'Content-Type': 'application/json'},
+		  	method: 'PUT',
+		  	url: 'http://roughly-api.herokuapp.com/run/' + runid,
+		  	data: runToUpdate
+
+		}).then(function successCallback(response) {
+
+			$scope.gotoMode('after-run');
+
+		}, function errorCallback(response) {
+		    
+		});
+	}
 }])
 
 .service('MapCenterService', ['GlobalData', function(globalData) {
