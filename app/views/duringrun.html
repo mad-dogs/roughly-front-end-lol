@@ -1,0 +1,16 @@
+<div class="during-run-form" ng-controller="DuringRunForm">
+
+	<div class="need-section">
+		<label>Inventory</label>
+
+		<div class="form-group">
+			<div ng-repeat="inventoryItem in inventory" class="form-group">
+				<div class="col-xs-5">
+					<select ng-model="inventoryItem.itemType" class="form-control" ng-options="item.id as item.description for item in items">
+					</select>
+				</div>
+				{{inventoryItem.itemQuantity}}
+			</div>
+		</div>
+	</div>
+</div>

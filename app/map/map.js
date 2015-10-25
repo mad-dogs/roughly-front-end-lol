@@ -177,7 +177,7 @@ angular.module('myApp.map', ['ngRoute'])
 	}
 
 	$scope.gotoDuringRunForm = function(){
-		
+		$scope.currentContent = 'views/duringrun.html';
 	}
 
 	$scope.gotoEndRunDetails = function(){
@@ -478,6 +478,15 @@ angular.module('myApp.map', ['ngRoute'])
 		});
 
 	}
+
+}])
+
+.controller('DuringRunForm', ['$scope', '$http', 'MapCenterService', 'GlobalData',
+	function($scope, $http, mapCenterService, globalData) {
+
+	$scope.run = globalData.currentRun;
+
+	console.log($scope.run);
 
 }])
 
