@@ -1,0 +1,19 @@
+<div class="during-run-form" ng-controller="DuringRunForm">
+
+	<div class="need-section">
+		<label>Inventory</label>
+
+		<div class="form-group">
+			<div ng-repeat="inventoryItem in inventory" class="form-group">
+				<label>{{inventoryItem.description}}</label>
+				<div class="right-buttons">
+					<button class="btn btn-default" ng-click="decreaseQuantity(inventoryItem)">-</button>
+					{{inventoryItem.qty}}
+					<button class="btn btn-default" ng-click="increaseQuantity(inventoryItem)">+</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<button class="btn btn-primary" ng-click="finishRun()"></button>
+</div>
