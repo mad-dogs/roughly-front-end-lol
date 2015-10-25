@@ -259,11 +259,27 @@ angular.module('myApp.map', ['ngRoute'])
 
 	$scope.updateMapWithTags = function(){
 		for(var i = 0; i < globalData.tags.length; i++){
-			var tag = globalData.tags[i];
-			var newMarker = new google.maps.Marker({
-				position: new google.maps.LatLng(tag.position.lat, tag.position.lng),
-				map: $scope.map,
-				title: 'TAG'
+	    	
+        var tag = globalData.tags[i];
+
+        var image = {
+          url: tag.needItems.length > 0
+            ? 'https://raw.githubusercontent.com/mad-dogs/resources/master/need-pin.png'
+            : 'https://raw.githubusercontent.com/mad-dogs/resources/master/pin.png',
+          
+          size: new google.maps.Size(24, 42),
+          scaledSize: new google.maps.Size(24, 42)
+          // The origin for this image is (0, 0).
+          // origin: new google.maps.Point(0, 0),
+          // The anchor for this image is the base of the flagpole at (0, 32).
+          // anchor: new google.maps.Point(0, 42)
+        };
+
+	    	var newMarker = new google.maps.Marker({
+		    	position: new google.maps.LatLng(tag.position.lat, tag.position.lng),
+		    	map: $scope.map,
+		    	title: 'TAG',
+          icon: image
 			});
 
 			(function(newMarker){
