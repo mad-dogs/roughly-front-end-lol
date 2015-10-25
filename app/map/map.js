@@ -264,10 +264,11 @@ angular.module('myApp.map', ['ngRoute'])
 
         var image = {
           url: tag.needItems.length > 0
-            ? 'https://raw.githubusercontent.com/mad-dogs/resources/master/need-pin-small.png'
-            : 'https://raw.githubusercontent.com/mad-dogs/resources/master/pin-small.png',
+            ? 'https://raw.githubusercontent.com/mad-dogs/resources/master/need-pin.png'
+            : 'https://raw.githubusercontent.com/mad-dogs/resources/master/pin.png',
           
           size: new google.maps.Size(24, 42),
+          scaledSize: new google.maps.Size(24, 42)
           // The origin for this image is (0, 0).
           // origin: new google.maps.Point(0, 0),
           // The anchor for this image is the base of the flagpole at (0, 32).
