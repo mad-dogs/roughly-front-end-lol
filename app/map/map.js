@@ -223,7 +223,8 @@ angular.module('myApp.map', ['ngRoute'])
 
 }])
 
-.controller('MapController', ['$scope', '$http', 'MapCenterService', function($scope, $http, mapCenterService) {
+.controller('MapController', ['$scope', '$http', 'MapCenterService', 'GlobalData',
+	function($scope, $http, mapCenterService, globalData) {
 
 	//Initialise
 	//Create map
@@ -232,6 +233,13 @@ angular.module('myApp.map', ['ngRoute'])
 
 	$scope.displayedTags = [];
 	$scope.renderedTags = [];
+
+	// Watch for changes on globalData.tags.
+	$scope.$watchCollection(function(){
+		return globalData.tags;
+	}, function(newArr, oldArr) {
+		$scope.updateMapWithTags();
+	});
 
 	$scope.showCrosshair = false;
 
@@ -261,6 +269,21 @@ angular.module('myApp.map', ['ngRoute'])
 
 	}
 
+	$scope.updateMapWithTags = function(){
+		for(var i = 0; i < globalData.tags.length; i++){
+	    	var tag = globalData.tags[i];
+	    	var newMarker = new google.maps.Marker({
+		    	position: new google.maps.LatLng(tag.position.lat, tag.position.lng),
+		    	map: $scope.map,
+		    	title: 'TAG'
+			});
+			tag.marker = newMarker;
+			newMarker.tag = tag;
+	    	$scope.displayedTags.push(tag);
+	    	$scope.renderedTags.push(newMarker);
+	    }
+	}
+
 	$scope.startTrackingUserLocation = function(){
 		$scope.isTrackingLocation = true;
 	}
@@ -282,18 +305,9 @@ angular.module('myApp.map', ['ngRoute'])
 		  	url: 'http://roughly-api.herokuapp.com/tag'
 		}).then(function successCallback(response) {
 		    console.log(response.data._embedded.tag);
-		    for(var i = 0; i < response.data._embedded.tag.length; i++){
-		    	var element = response.data._embedded.tag[i];
-		    	var newMarker = new google.maps.Marker({
-			    	position: new google.maps.LatLng(element.position.lat, element.position.lng),
-			    	map: $scope.map,
-			    	title: 'TAG'
-				});
-				element.marker = newMarker;
-				newMarker.element = element;
-		    	$scope.displayedTags.push(element);
-		    	$scope.renderedTags.push(newMarker);
-		    }
+
+		    $scope.tags = response.data._embedded.tag;
+		    $scope.updateMapWithTags();
 		}, function errorCallback(response) {
 		    
 		});
@@ -371,16 +385,25 @@ angular.module('myApp.map', ['ngRoute'])
 		}
 
 		//Send tag to servers
+		var tagToAdd = {
+			position: position,
+			numberOfPeople: $scope.numPeople,
+			numberOfDogs: $scope.numDogs,
+			tagType: '/tagtype/'+$scope.selectedType,
+			needs: needs
+		};
+
 		$http({
 			headers: {'Content-Type': 'application/json'},
 		  	method: 'POST',
 		  	url: 'http://roughly-api.herokuapp.com/tag',
-		  	data: {position: position, numberOfPeople: $scope.numPeople, numberOfDogs: $scope.numDogs, tagType: '/tagtype/'+$scope.selectedType, needs: needs}
+		  	data: tagToAdd
 
 		}).then(function successCallback(response) {
 		    
 			//We are happy, go back to initial mode
 			$scope.gotoMode('initial');
+			globalData.tags.push(tagToAdd);
 
 		}, function errorCallback(response) {
 		    
@@ -431,6 +454,7 @@ angular.module('myApp.map', ['ngRoute'])
 	var self = this;
 	self.items = [];
 	self.tagTypes = [];
+	self.tags = [];
 
 	// Load in items
 	$http({
@@ -452,6 +476,18 @@ angular.module('myApp.map', ['ngRoute'])
 	    console.log(response.data._embedded.tagtype);
 
 	    self.tagTypes = response.data._embedded.tagtype;
+	}, function errorCallback(response) {
+	    
+	});
+
+	// Also tags.
+	$http({
+	  	method: 'GET',
+	  	url: 'http://roughly-api.herokuapp.com/tag'
+	}).then(function successCallback(response) {
+	    console.log(response.data._embedded.tag);
+
+	    self.tags = response.data._embedded.tag;
 	}, function errorCallback(response) {
 	    
 	});
