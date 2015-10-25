@@ -289,14 +289,21 @@ angular.module('myApp.map', ['ngRoute'])
 
         var opacity = 1;
 
-        console.log(tag);
-
-        if (tag.createdDateTime != null)
+        if (tag.expiredDateTime != null)
         {
-          var createdTimestamp   = new Date(tag.createdDateTime.monthValue + "/" + tag.createdDateTime.dayOfMonth + "/" + tag.createdDateTime.year).getTime();
+          var createdDateTimeString = tag.createdDateTime
+            .split (".")[0]
+            .replace ("T", " ")
+            .replace ("-", "/")
+            .replace ("-", "/");
+
+          var createdTimestamp = new Date(createdDateTimeString).getTime();
           var nowTimestamp       = Math.floor(Date.now());
           var diff               = nowTimestamp - createdTimestamp;
-          var displayTime        = 172800000;
+          // var displayTime        = 259200000; // 3 days
+          // var displayTime        = 172800000; // 2 days
+
+          var displayTime        = 86400000;
           opacity                =  Math.max(0, displayTime - diff) / displayTime;
         }
 
